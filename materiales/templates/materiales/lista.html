@@ -5,10 +5,32 @@
 {% block contenido %}
     <section>
         <h2>{{ titulo_pagina }}</h2>
-        <p>
-            Aquí se mostrará el catálogo de ingredientes, utensilios y
-            materiales de decoración (rutas, vistas y contexto a cargo
-            de la persona responsable de esta sección).
-        </p>
+
+        <div class="filters">
+            <span>Filtrar por categoría:</span>
+            {% for cat in categorias %}
+                {% if cat == categoria_actual %}
+                    <strong class="filter-active">{{ cat }}</strong>
+                {% else %}
+                    <a class="filter-link" href="?categoria={{ cat }}">{{ cat }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if materiales %}
+            <div class="cards-grid">
+                {% for m in materiales %}
+                    <article class="card">
+                        <h3>{{ m.nombre }}</h3>
+                        <p class="muted"><em>{{ m.categoria }}</em></p>
+                        <p class="price">Precio: ${{ m.precio }}</p>
+                        <p class="availability">{% if m.disponible %}<span class="available">Disponible</span>{% else %}<span class="unavailable">Agotado</span>{% endif %}</p>
+                        <p class="desc">{{ m.descripcion }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No se encontraron materiales para la categoría seleccionada.</p>
+        {% endif %}
     </section>
 {% endblock %}

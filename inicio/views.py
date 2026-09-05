@@ -26,6 +26,6 @@ def nosotros(request):
     contexto = {
         'titulo_pagina': 'Nosotros',
         'anio_inicio': 2023,
-        'integrantes_equipo': ['Maria', 'Pedro', 'Javiera'],
+        'integrantes_equipo': [],
     }
     return render(request, 'inicio/nosotros.html', contexto)

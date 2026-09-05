@@ -118,7 +118,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+# Directorio de archivos estáticos del proyecto (permite servir static/ en dev)
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 
 # Email
