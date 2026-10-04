@@ -205,6 +205,15 @@ def build_report():
         'La aplicación debía incorporar CRUD completo, uso de get_object_or_404(), manejo adecuado de formularios, rutas específicas para cada operación '
         'y una vista de listado con acceso directo a cada acción. Además, se contempló validación para campos vacíos y valores inválidos.', body
     ))
+    story.append(Paragraph('3.1 Lista específica del CRUD solicitado', subtitle_style))
+    story.append(Paragraph(
+        'En materiales/views.py se reemplazaron los datos escritos manualmente por consultas ORM y se implementaron las funciones para listar, crear, editar y eliminar materiales. '
+        'Las funciones de edición y eliminación usan get_object_or_404() para registros inexistentes. materiales/urls.py define las rutas de listado, creación, edición y eliminación. '
+        'La plantilla lista.html muestra los materiales y sus acciones; formulario.html sirve para crear y editar; eliminar.html confirma la acción y permite cancelarla. '
+        'Los formularios incluyen {% csrf_token %} y la eliminación solo modifica datos mediante POST. '
+        'Las pruebas comprueban listado, creación válida, campos vacíos, dato inválido, edición, cancelación, confirmación, 404 y CSRF. '
+        'Las capturas de cada flujo aparecen en la sección 7.', body
+    ))
 
     story.append(Paragraph('4. Desarrollo del sistema', subtitle_style))
     story.append(Paragraph(
