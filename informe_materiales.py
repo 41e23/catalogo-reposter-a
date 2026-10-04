@@ -1,5 +1,7 @@
 from pathlib import Path
 from datetime import date
+import subprocess
+import sys
 
 from PIL import Image, ImageDraw, ImageFont
 from reportlab.lib import colors
@@ -65,6 +67,33 @@ def create_code_screenshot(rel_path: str, label: str) -> str:
     asset_dir.mkdir(exist_ok=True)
     output_path = asset_dir / f"{Path(rel_path).stem}.png"
     image.save(output_path, format="PNG", optimize=True, quality=100)
+    return str(output_path)
+
+
+def create_output_screenshot(text: str, label: str) -> str:
+    lines = text.splitlines() or [""]
+    width = 2200
+    padding_top = 110
+    line_height = 30
+    visible_lines = lines[:32]
+    height = max(500, padding_top + len(visible_lines) * line_height + 70)
+
+    image = Image.new("RGB", (width, height), color=(24, 26, 32))
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle((20, 18, width - 20, height - 18), radius=18, fill=(33, 36, 43))
+    draw.rounded_rectangle((20, 18, width - 20, 60), radius=18, fill=(46, 49, 58))
+    for index, color in enumerate([(255, 92, 92), (255, 196, 87), (74, 222, 128)]):
+        x = 36 + index * 18
+        draw.ellipse((x, 30, x + 10, 40), fill=color)
+
+    draw.text((40, 72), label, font=load_mono_font(28), fill=(212, 217, 232))
+    font = load_mono_font(22)
+    for index, line in enumerate(visible_lines):
+        safe_line = line if len(line) < 150 else line[:147] + "..."
+        draw.text((90, padding_top + index * line_height), safe_line, font=font, fill=(238, 240, 245))
+
+    output_path = BASE / "_report_assets" / "pruebas.png"
+    image.save(output_path, format="PNG", optimize=True)
     return str(output_path)
 
 
@@ -168,19 +197,37 @@ def build_report():
     add_code_block('materiales/tests.py', 'materiales/tests.py')
 
     story.append(Paragraph('6. Resultados verificados', subtitle_style))
-    verification = '''
-python manage.py test materiales
-Resultado: 9 pruebas ejecutadas, OK
-
-python manage.py check
-Resultado: System check identified no issues (0 silenced)
-
-URL validada: http://localhost:8000/materiales/
-Resultado: HTTP 200
-    '''
-    screenshot = create_code_screenshot('materiales/tests.py', 'Verificación')
+    test_result = subprocess.run(
+        [sys.executable, 'manage.py', 'test', 'materiales', '--verbosity=2'],
+        cwd=BASE,
+        capture_output=True,
+        text=True,
+    )
+    check_result = subprocess.run(
+        [sys.executable, 'manage.py', 'check'],
+        cwd=BASE,
+        capture_output=True,
+        text=True,
+    )
+    test_output = test_result.stdout + test_result.stderr
+    test_lines = [
+        line for line in test_output.splitlines()
+        if line.startswith(('Found ', 'test_', 'Ran ', 'FAILED'))
+        or line in {'OK'}
+        or 'System check identified' in line
+    ]
+    check_output = check_result.stdout + check_result.stderr
+    check_lines = [line for line in check_output.splitlines() if line.strip()]
+    verification = (
+        '$ python manage.py test materiales --verbosity=2\n'
+        + '\n'.join(test_lines)
+        + '\n\n$ python manage.py check\n'
+        + '\n'.join(check_lines)
+        + f'\n\nExit codes: tests={test_result.returncode}, check={check_result.returncode}'
+    )
+    screenshot = create_output_screenshot(verification, 'Resultados reales de pruebas')
     story.append(Paragraph('Verificación', file_tag))
-    story.append(ReportImage(screenshot, width=170 * mm, height=230 * mm, kind='proportional'))
+    story.append(ReportImage(screenshot, width=170 * mm, height=115 * mm, kind='proportional'))
 
     story.append(Paragraph('7. Conclusión', subtitle_style))
     story.append(Paragraph(
