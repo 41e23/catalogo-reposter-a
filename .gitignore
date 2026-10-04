@@ -5,4 +5,8 @@ db.sqlite3
 venv/
 env/
 .env
+.env.*
+!.env.example
+.venv/
+*.log
 .DS_Store

@@ -1,0 +1,35 @@
+[
+  {
+    "model": "materiales.material",
+    "pk": null,
+    "fields": {
+      "nombre": "Harina 0000",
+      "categoria": "Ingredientes",
+      "stock": 25,
+      "precio": "1850.00",
+      "descripcion": "Harina refinada para bizcochos y masas ligeras."
+    }
+  },
+  {
+    "model": "materiales.material",
+    "pk": null,
+    "fields": {
+      "nombre": "Cacao amargo",
+      "categoria": "Ingredientes",
+      "stock": 14,
+      "precio": "3200.00",
+      "descripcion": "Cacao en polvo para rellenos y coberturas."
+    }
+  },
+  {
+    "model": "materiales.material",
+    "pk": null,
+    "fields": {
+      "nombre": "Molde de silicona",
+      "categoria": "Utensilios",
+      "stock": 8,
+      "precio": "4600.00",
+      "descripcion": "Molde reutilizable para preparaciones de repostería."
+    }
+  }
+]

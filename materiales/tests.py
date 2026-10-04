@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -23,6 +24,19 @@ class MaterialCrudTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Harina 0000")
         self.assertTemplateUsed(response, "materiales/lista.html")
+
+    def test_materiales_disponibles_en_admin(self):
+        user = get_user_model().objects.create_superuser(
+            username="admin-test",
+            email="admin-test@example.com",
+            password="test-only-password",
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("admin:materiales_material_changelist"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Harina 0000")
 
     def test_creacion_valida(self):
         payload = {

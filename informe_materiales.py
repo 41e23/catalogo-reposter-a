@@ -65,7 +65,8 @@ def create_code_screenshot(rel_path: str, label: str) -> str:
 
     asset_dir = BASE / "_report_assets"
     asset_dir.mkdir(exist_ok=True)
-    output_path = asset_dir / f"{Path(rel_path).stem}.png"
+    asset_name = str(Path(rel_path).with_suffix("")).replace("\\", "_").replace("/", "_")
+    output_path = asset_dir / f"{asset_name}.png"
     image.save(output_path, format="PNG", optimize=True, quality=100)
     return str(output_path)
 
@@ -131,11 +132,52 @@ def build_report():
         screenshot = create_code_screenshot(rel_path, label)
         story.append(ReportImage(screenshot, width=170 * mm, height=220 * mm, kind='proportional'))
 
+    def add_evidence(label: str, rel_path: str):
+        story.append(Paragraph(label, file_tag))
+        story.append(ReportImage(str(BASE / rel_path), width=170 * mm, height=230 * mm, kind='proportional'))
+        story.append(Spacer(1, 3 * mm))
+
     story = []
     story.append(Paragraph('Informe de proyecto: Sistema web de materiales', title_style))
     story.append(Paragraph('Alacena & Molde', ParagraphStyle('Brand', parent=styles['Heading1'], fontName='Helvetica-Bold', fontSize=16, leading=20, textColor=colors.HexColor('#2c2c2c'))))
     story.append(Paragraph(f'Fecha de elaboración: {date.today().strftime("%d/%m/%Y")}', body))
+    story.append(Paragraph('Integrantes registrados: Pablo Gutiérrez, Matías Gallardo y Álvaro García.', body))
+    story.append(Paragraph('Repositorio: github.com/41e23/catalogo-reposter-a | Rama de entrega: entrega-materiales.', body))
     story.append(Spacer(1, 6 * mm))
+
+    story.append(Paragraph('Problemática, continuidad y entidad', subtitle_style))
+    story.append(Paragraph(
+        'El proyecto continúa el catálogo de un emprendimiento de repostería. La entidad Material permite registrar insumos y controlar nombre, '
+        'categoría, stock, precio y descripción. El CRUD se implementa en la aplicación materiales y se relaciona con el catálogo y la consulta de proveedores.', body
+    ))
+    story.append(Paragraph(
+        'La estructura contiene cuatro aplicaciones Django: catalogo, inicio, materiales y proveedores. Los usuarios responsables del inventario '
+        'pueden consultar y modificar materiales desde la interfaz web; el personal autorizado puede administrarlos desde Django Admin.', body
+    ))
+
+    story.append(Paragraph('Base de datos, entorno y estado de verificación', subtitle_style))
+    story.append(Paragraph(
+        'El proyecto admite PostgreSQL mediante DB_ENGINE y las variables DB_NAME, DB_USER, DB_PASSWORD, DB_HOST y DB_PORT cargadas desde .env. '
+        'El archivo .env.example contiene solo valores de muestra y .env está excluido por .gitignore. psycopg está declarado en requirements.txt.', body
+    ))
+    story.append(Paragraph(
+        '<b>Estado:</b> en el entorno usado para esta revisión no se detectó un servidor PostgreSQL local. Las pruebas ejecutadas aquí usaron SQLite '
+        'como respaldo; por tanto, la conexión real a PostgreSQL, la verificación en pgAdmin y sus capturas siguen pendientes de realizar en un equipo con PostgreSQL configurado.', body
+    ))
+
+    story.append(Paragraph('Modelo, migraciones, datos de ejemplo y Admin', subtitle_style))
+    story.append(Paragraph(
+        'Material está definido en materiales/models.py y su migración inicial está en materiales/migrations/0001_initial.py. El modelo está '
+        'registrado en Django Admin con columnas, filtro por categoría y búsqueda. Una prueba automatizada inicia sesión como superusuario de prueba '
+        'y verifica que el listado administrativo muestre materiales.', body
+    ))
+    story.append(Paragraph(
+        'La fixture materiales_demo carga tres registros de ejemplo mediante Django. Para completar la demostración, el equipo debe crear un superusuario '
+        'local con createsuperuser, iniciar sesión en /admin/, modificar un registro y eliminar otro; no se guardan credenciales en este repositorio.', body
+    ))
+    add_code_block('materiales/admin.py', 'materiales/admin.py')
+    add_code_block('config/urls.py', 'config/urls.py')
+    add_code_block('materiales/migrations/0001_initial.py', 'materiales/migrations/0001_initial.py')
 
     story.append(Paragraph('Captura de código y estructura del proyecto', section_title))
     story.append(Paragraph(
@@ -229,11 +271,57 @@ def build_report():
     story.append(Paragraph('Verificación', file_tag))
     story.append(ReportImage(screenshot, width=170 * mm, height=115 * mm, kind='proportional'))
 
-    story.append(Paragraph('7. Conclusión', subtitle_style))
+    story.append(Paragraph('7. Capturas de pruebas web', subtitle_style))
     story.append(Paragraph(
-        'El proyecto cumple con los requisitos solicitados para un CRUD web de materiales en Django. La aplicación se encuentra operativa, '
-        'con enlaces funcionales, validaciones, manejo de errores y seguridad básica mediante CSRF. Además, la estructura es escalable y preparada '
-        'para continuar con nuevas funcionalidades del catálogo de repostería.', body
+        'Las siguientes capturas se tomaron del sitio local durante las pruebas. El registro creado para las capturas fue temporal y se eliminó al terminar.', body
+    ))
+    evidence = [
+        ('Listado con materiales de ejemplo', '_report_assets/listado_web.png'),
+        ('Formulario para crear', '_report_assets/crear_web.png'),
+        ('Validación de campos vacíos', '_report_assets/validacion_vacia_web.png'),
+        ('Rechazo de stock y precio inválidos', '_report_assets/dato_invalido_web.png'),
+        ('Registro creado', '_report_assets/creacion_web.png'),
+        ('Formulario de edición precargado', '_report_assets/edicion_precargada_web.png'),
+        ('Edición guardada', '_report_assets/edicion_guardada_web.png'),
+        ('Confirmación de eliminación', '_report_assets/confirmar_eliminacion_web.png'),
+        ('Cancelación: el registro permanece', '_report_assets/cancelar_eliminacion_web.png'),
+        ('Eliminación confirmada: el registro ya no aparece', '_report_assets/eliminacion_confirmada_web.png'),
+        ('Error 404 para identificador inexistente', '_report_assets/error_404_web.png'),
+        ('403 al enviar el formulario sin token CSRF', '_report_assets/csrf_403_web.png'),
+        ('Acceso de inicio de sesión a Django Admin', '_report_assets/admin_login_web.png'),
+    ]
+    for label, rel_path in evidence:
+        add_evidence(label, rel_path)
+
+    story.append(Paragraph('8. GitHub, uso de IA y reflexión', subtitle_style))
+    story.append(Paragraph(
+        'La rama publicada es entrega-materiales. El historial de Git debe revisarse para identificar las contribuciones reales de cada integrante; '
+        'no se atribuyen commits individuales en este informe.', body
+    ))
+    story.append(Paragraph(
+        '<b>Prompt del equipo:</b> “Trabajar principalmente en el CRUD web de materiales; reemplazar los materiales escritos manualmente por consultas ORM; '
+        'crear funciones para listar, crear, editar y eliminar; usar get_object_or_404(); crear las rutas y plantillas; incorporar CSRF; ejecutar el borrado solo por POST; '
+        'mantener la cancelación; probar listado, creación válida, campos vacíos, dato inválido, edición, cancelación, confirmación, 404 y CSRF; sacar capturas de las pruebas”. '
+        '<b>Propuesta aplicada:</b> ModelForm, operaciones ORM, rutas con nombres, validación, confirmación POST y pruebas automatizadas. '
+        '<b>Decisión:</b> aceptar los cambios después de revisar archivos y ejecutar pruebas; mantener PostgreSQL como requisito pendiente cuando no hay servidor local disponible. '
+        '<b>Verificación:</b> diez pruebas automatizadas y manage.py check sin errores en SQLite; captura real de 403, 404 y flujos CRUD.', body
+    ))
+    story.append(Paragraph(
+        '<b>Reflexión del equipo (completar con sus propias respuestas):</b><br/>'
+        '¿Qué parte del CRUD fue más difícil y por qué? ______________________________________________<br/>'
+        '¿Qué error permitió aprender algo importante? ______________________________________________<br/>'
+        '¿Qué sugerencia de IA aceptaron, modificaron o rechazaron y por qué? __________________________<br/>'
+        '¿Qué funcionalidad implementarán en la siguiente evaluación? _________________________________', body
+    ))
+    story.append(Paragraph(
+        '<b>Pendiente antes de entregar:</b> configurar y demostrar PostgreSQL; ejecutar migrate y mostrar pgAdmin; crear superusuario y realizar '
+        'las operaciones requeridas desde Admin; incorporar capturas de esas acciones; completar la reflexión y confirmar la distribución real de commits.', body
+    ))
+
+    story.append(Paragraph('9. Conclusión', subtitle_style))
+    story.append(Paragraph(
+        'El CRUD web y sus validaciones están implementados y verificados localmente. La configuración admite PostgreSQL y Django Admin; '
+        'la evaluación completa depende de comprobar la conexión PostgreSQL y adjuntar la evidencia administrativa pendiente indicada arriba.', body
     ))
 
     doc = SimpleDocTemplate(

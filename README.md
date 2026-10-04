@@ -1,119 +1,87 @@
-# Dulce Repostería — Catálogo Web
+# Alacena & Molde
 
-## Propósito
-Aplicación web desarrollada con Django para presentar y organizar
-materiales utilizados en un emprendimiento de repostería y consultar
-información de proveedores.
+Aplicación Django para un emprendimiento de repostería. Incluye un catálogo, información de proveedores y un CRUD de materiales persistido mediante el ORM.
 
-## Proyección
-En futuras evaluaciones se podrá ampliar con base de datos, gestión de
-stock, formularios y otras funcionalidades; estas mejoras no se
-implementan en la entrega actual.
+## Aplicaciones
 
-## Integrantes
-- Pablo Gutiérrez
-- Matías Gallardo
-- Álvaro García
+- `catalogo`: portada y página de información.
+- `inicio`: páginas heredadas del proyecto original.
+- `materiales`: inventario, validación y CRUD.
+- `proveedores`: listado de proveedores.
 
-## Repositorio
-https://github.com/41e23/catalogo-reposter-a
+El modelo `Material` guarda nombre, categoría, stock, precio y descripción. El CRUD está en `/materiales/`; Django Admin se encuentra en `/admin/`.
 
-## Instalación y ejecución
-```bash
+## Requisitos
+
+- Python 3.10 o superior.
+- Para la entrega con PostgreSQL: PostgreSQL 14 o superior, una base de datos y un usuario con permisos.
+
+## Instalación en Windows
+
+```powershell
 git clone https://github.com/41e23/catalogo-reposter-a.git
 cd catalogo-reposter-a
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Edita `.env` con la configuración local. El archivo `.env` está excluido de Git y no se debe compartir. Para PostgreSQL, crea una base y un rol, por ejemplo desde `psql`:
+
+```sql
+CREATE ROLE alacena_user WITH LOGIN PASSWORD 'elige-una-clave-local';
+CREATE DATABASE alacena_molde OWNER alacena_user;
+```
+
+En `.env`, cambia `DB_USER` a `alacena_user` y `DB_PASSWORD` por la misma clave local. No subas esa clave. Luego ejecuta:
+
+```powershell
+python manage.py check
+python manage.py showmigrations
 python manage.py migrate
+python manage.py loaddata materiales_demo
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Abrir en el navegador:
+La fixture `materiales/fixtures/materiales_demo.json` carga tres materiales de ejemplo mediante Django. Abre `http://127.0.0.1:8000/`. Para completar la evidencia administrativa, inicia sesión en `http://127.0.0.1:8000/admin/`, modifica un material y elimina otro desde el panel.
 
-http://127.0.0.1:8000/
+Si `.env` no existe o `DB_ENGINE=sqlite`, el proyecto usa SQLite para desarrollo local. Para verificar el requisito PostgreSQL, configura PostgreSQL en `.env` y confirma que `migrate` y la aplicación se conecten antes de tomar las capturas de entrega.
 
-## Estructura principal
+## Variables de entorno
+
+`.env.example` contiene valores de muestra. Copia el archivo a `.env` y reemplaza la clave y los datos de conexión localmente:
+
+- `SECRET_KEY`: clave privada de Django.
+- `DEBUG`: `False` en una instalación compartida o desplegada.
+- `ALLOWED_HOSTS`: nombres de host permitidos.
+- `DB_ENGINE`: `postgresql` para PostgreSQL o `sqlite` para desarrollo local.
+- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`: conexión a PostgreSQL.
+
+Nunca incluyas `.env`, contraseñas o claves en commits.
+
+## Pruebas
+
+```powershell
+python manage.py test materiales
+python manage.py check
 ```
-config/
-inicio/
-materiales/
-proveedores/
-templates/
-static/
-manage.py
-requirements.txt
-.gitignore
-README.md
-```
 
-## Rutas
-/                  Inicio
-/nosotros/         Nosotros
-/materiales/       Materiales
-/proveedores/      Proveedores
+La suite del CRUD cubre listado, creación válida, campos vacíos, datos inválidos, edición, cancelar y confirmar eliminación, 404 y protección CSRF.
 
-Materiales y Proveedores permiten filtrar contenido mediante parámetros
-GET en la URL (por ejemplo `?categoria=` o `?tipo=`).
+## Rutas principales
 
-## Trabajo colaborativo
-Este proyecto se desarrolla en un repositorio compartido en GitHub por:
+- `/`: catálogo.
+- `/inicio/`: inicio del proyecto original.
+- `/nosotros/`: información del emprendimiento.
+- `/materiales/`: inventario y acciones CRUD.
+- `/proveedores/`: proveedores.
+- `/admin/`: administración de Django.
 
-- Pablo Gutiérrez
-- Matías Gallardo
-- Álvaro García
+## Equipo y uso de IA
 
-Los integrantes trabajan sobre el mismo repositorio usando Git y GitHub
-para subir cambios, crear commits e integrar el trabajo.
+Integrantes indicados en la primera etapa: Pablo Gutiérrez, Matías Gallardo y Álvaro García. Cada integrante debe registrar sus propios commits; la historia de Git debe reflejar las contribuciones reales.
 
-## Dificultades y soluciones
-1. Organización de rutas de las distintas aplicaciones.
-   Solución: uso de `urls.py` por aplicación e `include()` en
-   `config/urls.py`.
-2. Evitar repetir estructura HTML.
-   Solución: uso de `base.html`, `extends` y `block`.
-3. Envío de información hacia los templates.
-   Solución: uso de contexto desde las vistas mediante `render()`.
-4. Filtrado de materiales y proveedores.
-   Solución: utilización de `request.GET` y listas Python en las vistas.
-
-## Aprendizajes
-- Diferencia entre proyecto y aplicación en Django.
-- Organización de rutas y uso de `include()`.
-- Vistas basadas en funciones y `render()`.
-- Plantillas: `extends`, `block`, `if` y `for`.
-- Uso de `{% url %}` para navegación interna.
-- Trabajo colaborativo con GitHub.
-
-## Registro de uso de IA
-La IA se utilizó como apoyo para revisar y proponer cambios menores en
-la estructura y documentación del proyecto. Ejemplos breves:
-
-- Conexión de rutas mediante `include()`:
-  - Necesidad: organizar urls por aplicación.
-  - Consulta: cómo incluir rutas de apps en `config/urls.py`.
-  - Solución propuesta: usar `path('app/', include('app.urls'))`.
-  - Cambio aplicado: ver `config/urls.py`.
-  - Aprendizaje: facilita separación de responsabilidad.
-
-- Herencia de plantillas con `base.html`:
-  - Necesidad: evitar duplicación de HTML.
-  - Consulta: cómo estructurar `base.html` y usar `extends`.
-  - Solución propuesta: crear bloques `titulo` y `contenido`.
-  - Cambio aplicado: las plantillas usan `{% extends 'base.html' %}`.
-  - Aprendizaje: simplifica mantenimiento de layout.
-
-- Envío de contexto desde vistas:
-  - Necesidad: mostrar listas y variables en templates.
-  - Consulta: cómo pasar contexto con `render()`.
-  - Solución propuesta: pasar un diccionario `contexto`.
-  - Cambio aplicado: vistas envían listas de materiales/proveedores.
-  - Aprendizaje: permite templates dinámicos sin modelos.
-
-- Implementación de filtros mediante `request.GET`:
-  - Necesidad: filtrar listados sin formularios ni DB.
-  - Consulta: cómo leer parámetros GET en vistas.
-  - Solución propuesta: `request.GET.get('categoria')` y filtrar la lista.
-  - Cambio aplicado: filtros en `materiales` y `proveedores`.
-  - Aprendizaje: útil para demostraciones y prototipos.
+La IA se usó para revisar el CRUD, investigar errores y preparar evidencia. El informe debe conservar las preguntas, propuestas, decisiones y resultados reales del equipo; completen la reflexión con sus propias palabras antes de entregar.
 
