@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg4" x1="0" x2="1">
+      <stop offset="0%" stop-color="#f2eac8"/>
+      <stop offset="100%" stop-color="#d8c98d"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg4)"/>
+  <circle cx="200" cy="180" r="80" fill="#f7f1d8"/>
+  <circle cx="440" cy="220" r="120" fill="#d4b46f" opacity="0.6"/>
+  <rect x="180" y="315" width="440" height="140" rx="24" fill="#fff7df" opacity="0.8"/>
+  <text x="400" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#5b4924">ALACENA</text>
+</svg>

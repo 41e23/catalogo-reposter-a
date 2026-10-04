@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0%" stop-color="#f7d9a7"/>
+      <stop offset="100%" stop-color="#e7c08d"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="650" cy="120" r="70" fill="#f2f0d5" opacity="0.8"/>
+  <rect x="90" y="260" width="620" height="220" rx="28" fill="#b86d3f" opacity="0.42"/>
+  <rect x="180" y="150" width="180" height="200" rx="26" fill="#f9f3df"/>
+  <rect x="420" y="160" width="160" height="180" rx="24" fill="#f5ead3"/>
+  <circle cx="270" cy="240" r="52" fill="#f0d7b3"/>
+  <circle cx="500" cy="250" r="46" fill="#b86d3f" opacity="0.8"/>
+  <path d="M350 470 C420 360, 550 360, 590 470" stroke="#7e4928" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <text x="400" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="#5a3119">INGREDIENTES</text>
+</svg>

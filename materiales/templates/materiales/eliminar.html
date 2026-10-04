@@ -1,0 +1,21 @@
+{% extends 'catalogo/base.html' %}
+
+{% block title %}Eliminar material | Alacena & Molde{% endblock %}
+
+{% block content %}
+<main class="form-page">
+  <section class="form-card confirm-card">
+    <p class="eyebrow">CONFIRMACIÓN</p>
+    <h1>Eliminar material</h1>
+    <p>¿Estás seguro de que deseas eliminar <strong>{{ material.nombre }}</strong>?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-actions">
+        <button class="primary-button danger-button" type="submit">Confirmar eliminación</button>
+        <a class="secondary-button" href="{% url 'materiales:lista' %}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

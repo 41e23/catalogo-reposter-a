@@ -1,0 +1,49 @@
+{% extends 'catalogo/base.html' %}
+
+{% block title %}Materiales | Alacena & Molde{% endblock %}
+
+{% block content %}
+<main class="materials-page">
+  <section class="materials-header">
+    <div>
+      <p class="eyebrow">MATERIALES</p>
+      <h1>Inventario de <em>materiales</em></h1>
+    </div>
+    <a class="primary-button" href="{% url 'materiales:crear' %}">Agregar material <span>＋</span></a>
+  </section>
+
+  {% if materiales %}
+    <div class="materials-table-wrap">
+      <table class="materials-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Stock</th>
+            <th>Precio</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for material in materiales %}
+            <tr>
+              <td>{{ material.nombre }}</td>
+              <td>{{ material.categoria }}</td>
+              <td>{{ material.stock }}</td>
+              <td>${{ material.precio }}</td>
+              <td>{{ material.descripcion|default:"—" }}</td>
+              <td class="actions-cell">
+                <a class="table-link" href="{% url 'materiales:editar' material.pk %}">Editar</a>
+                <a class="table-link danger" href="{% url 'materiales:eliminar' material.pk %}">Eliminar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty-state">Todavía no hay materiales registrados.</p>
+  {% endif %}
+</main>
+{% endblock %}
