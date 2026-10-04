@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ titulo_pagina }} - Dulce Repostería{% endblock %}
+
+{% block contenido %}
+    <section>
+        <h2>{{ titulo_pagina }}</h2>
+
+        <div class="filters">
+            <span>Filtrar por tipo:</span>
+            {% for t in tipos %}
+                {% if t == tipo_actual %}
+                    <strong class="filter-active">{{ t }}</strong>
+                {% else %}
+                    <a class="filter-link" href="?tipo={{ t }}">{{ t }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if proveedores %}
+            <div class="cards-grid">
+                {% for p in proveedores %}
+                    <article class="card">
+                        <h3>{{ p.nombre }}</h3>
+                        <p class="muted"><em>{{ p.tipo }}</em></p>
+                        <p class="meta">Ubicación: {{ p.ciudad }} • Contacto: {{ p.contacto }}</p>
+                        <p class="desc">Productos: {{ p.productos|join:", " }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No hay proveedores para el filtro seleccionado.</p>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ titulo_pagina }} - Dulce Repostería{% endblock %}
+
+{% block contenido %}
+    <section>
+        <h2>{{ titulo_pagina }} a {{ nombre_emprendimiento }}</h2>
+        <p>
+            Somos un emprendimiento de repostería dedicado a la venta de ingredientes,
+            utensilios y materiales de decoración para quienes aman hornear.
+            Este catálogo te permite conocer nuestros productos y proveedores
+            de forma ordenada y clara.
+        </p>
+    </section>
+
+    <section>
+        <h3>Productos destacados</h3>
+        {% if hay_destacados %}
+            <ul>
+                {% for producto in destacados %}
+                    <li>
+                        <strong>{{ producto.nombre }}</strong> — {{ producto.categoria }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Por el momento no hay productos destacados.</p>
+        {% endif %}
+    </section>
+{% endblock %}
