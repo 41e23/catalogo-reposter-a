@@ -3,12 +3,12 @@
 ## Propósito
 Aplicación web desarrollada con Django para presentar y organizar
 materiales utilizados en un emprendimiento de repostería y consultar
-información de proveedores.
+información de proveedores. Los materiales se almacenan en la base de
+datos y se pueden crear, consultar, editar y eliminar desde el sitio.
 
 ## Proyección
-En futuras evaluaciones se podrá ampliar con base de datos, gestión de
-stock, formularios y otras funcionalidades; estas mejoras no se
-implementan en la entrega actual.
+El catálogo de materiales incluye validación de formularios, administración
+desde Django Admin y registro de fecha. No incluye gestión de stock.
 
 ## Integrantes
 - Pablo Gutiérrez
@@ -53,8 +53,8 @@ README.md
 /materiales/       Materiales
 /proveedores/      Proveedores
 
-Materiales y Proveedores permiten filtrar contenido mediante parámetros
-GET en la URL (por ejemplo `?categoria=` o `?tipo=`).
+Materiales ofrece operaciones CRUD en `/materiales/`; Proveedores permite
+filtrar contenido mediante parámetros GET en la URL (por ejemplo `?tipo=`).
 
 ## Trabajo colaborativo
 Este proyecto se desarrolla en un repositorio compartido en GitHub por:
@@ -80,7 +80,7 @@ para subir cambios, crear commits e integrar el trabajo.
 ## Aprendizajes
 - Diferencia entre proyecto y aplicación en Django.
 - Organización de rutas y uso de `include()`.
-- Vistas basadas en funciones y `render()`.
+- Vistas basadas en funciones, ORM de Django y `render()`.
 - Plantillas: `extends`, `block`, `if` y `for`.
 - Uso de `{% url %}` para navegación interna.
 - Trabajo colaborativo con GitHub.
@@ -116,4 +116,3 @@ la estructura y documentación del proyecto. Ejemplos breves:
   - Solución propuesta: `request.GET.get('categoria')` y filtrar la lista.
   - Cambio aplicado: filtros en `materiales` y `proveedores`.
   - Aprendizaje: útil para demostraciones y prototipos.
-

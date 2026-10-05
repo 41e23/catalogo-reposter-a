@@ -1,36 +1,49 @@
-{% extends 'base.html' %}
+{% extends 'catalogo/base.html' %}
 
-{% block titulo %}{{ titulo_pagina }} - Dulce Repostería{% endblock %}
+{% block title %}Materiales | Alacena & Molde{% endblock %}
 
-{% block contenido %}
-    <section>
-        <h2>{{ titulo_pagina }}</h2>
+{% block content %}
+<main class="materials-page">
+  <section class="materials-header">
+    <div>
+      <p class="eyebrow">MATERIALES</p>
+      <h1>Inventario de <em>materiales</em></h1>
+    </div>
+    <a class="primary-button" href="{% url 'materiales:crear' %}">Agregar material <span>＋</span></a>
+  </section>
 
-        <div class="filters">
-            <span>Filtrar por categoría:</span>
-            {% for cat in categorias %}
-                {% if cat == categoria_actual %}
-                    <strong class="filter-active">{{ cat }}</strong>
-                {% else %}
-                    <a class="filter-link" href="?categoria={{ cat }}">{{ cat }}</a>
-                {% endif %}
-            {% endfor %}
-        </div>
-
-        {% if materiales %}
-            <div class="cards-grid">
-                {% for m in materiales %}
-                    <article class="card">
-                        <h3>{{ m.nombre }}</h3>
-                        <p class="muted"><em>{{ m.categoria }}</em></p>
-                        <p class="price">Precio: ${{ m.precio }}</p>
-                        <p class="availability">{% if m.disponible %}<span class="available">Disponible</span>{% else %}<span class="unavailable">Agotado</span>{% endif %}</p>
-                        <p class="desc">{{ m.descripcion }}</p>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No se encontraron materiales para la categoría seleccionada.</p>
-        {% endif %}
-    </section>
+  {% if materiales %}
+    <div class="materials-table-wrap">
+      <table class="materials-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Disponibilidad</th>
+            <th>Precio</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for material in materiales %}
+            <tr>
+              <td>{{ material.nombre }}</td>
+              <td>{{ material.get_categoria_display }}</td>
+              <td>{% if material.disponible %}Disponible{% else %}Agotado{% endif %}</td>
+              <td>${{ material.precio }}</td>
+              <td>{{ material.descripcion|default:"—" }}</td>
+              <td class="actions-cell">
+                <a class="table-link" href="{% url 'materiales:editar' material.pk %}">Editar</a>
+                <a class="table-link danger" href="{% url 'materiales:eliminar' material.pk %}">Eliminar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty-state">Todavía no hay materiales registrados.</p>
+  {% endif %}
+</main>
 {% endblock %}

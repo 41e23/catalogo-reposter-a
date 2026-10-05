@@ -1,64 +1,54 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_http_methods
+
+from .forms import MaterialForm
+from .models import Material
 
 
-def lista(request):
-    """Lista de materiales (datos en memoria). Permite filtrar por categoría
-    mediante `?categoria=` en la query string."""
-    materiales = [
-        {
-            'nombre': 'Harina 0000',
-            'categoria': 'Ingredientes',
-            'precio': 1850,
-            'disponible': True,
-            'descripcion': 'Harina refinada ideal para bizcochos y masas ligeras.',
-        },
-        {
-            'nombre': 'Cacao amargo',
-            'categoria': 'Ingredientes',
-            'precio': 3200,
-            'disponible': True,
-            'descripcion': 'Cacao en polvo para rellenos y coberturas intensas.',
-        },
-        {
-            'nombre': 'Batidor globo',
-            'categoria': 'Utensilios',
-            'precio': 4600,
-            'disponible': True,
-            'descripcion': 'Batidor de acero inoxidable, resistente y ergonómico.',
-        },
-        {
-            'nombre': 'Espátula angular',
-            'categoria': 'Utensilios',
-            'precio': 3900,
-            'disponible': True,
-            'descripcion': 'Espátula perfecta para alisar y desmoldar.',
-        },
-        {
-            'nombre': 'Mix de grageas',
-            'categoria': 'Decoración',
-            'precio': 2100,
-            'disponible': True,
-            'descripcion': 'Surtido de grageas de colores para decorar tortas y cupcakes.',
-        },
-        {
-            'nombre': 'Flores de azúcar',
-            'categoria': 'Decoración',
-            'precio': 2800,
-            'disponible': False,
-            'descripcion': 'Juego de flores comestibles para acabados elegantes.',
-        },
-    ]
+@require_http_methods(["GET"])
+def listar_materiales(request):
+    materiales = Material.objects.all()
+    return render(request, "materiales/lista.html", {"materiales": materiales})
 
-    categorias = ['Todos', 'Ingredientes', 'Utensilios', 'Decoración']
-    categoria_actual = request.GET.get('categoria', 'Todos')
 
-    if categoria_actual and categoria_actual != 'Todos':
-        materiales = [m for m in materiales if m['categoria'] == categoria_actual]
+@require_http_methods(["GET", "POST"])
+def crear_material(request):
+    if request.method == "POST":
+        form = MaterialForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("materiales:lista")
+    else:
+        form = MaterialForm()
 
-    contexto = {
-        'titulo_pagina': 'Materiales',
-        'materiales': materiales,
-        'categorias': categorias,
-        'categoria_actual': categoria_actual,
-    }
-    return render(request, 'materiales/lista.html', contexto)
+    return render(request, "materiales/formulario.html", {"form": form, "accion": "Crear"})
+
+
+@require_http_methods(["GET", "POST"])
+def editar_material(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+
+    if request.method == "POST":
+        form = MaterialForm(request.POST, instance=material)
+        if form.is_valid():
+            form.save()
+            return redirect("materiales:lista")
+    else:
+        form = MaterialForm(instance=material)
+
+    return render(
+        request,
+        "materiales/formulario.html",
+        {"form": form, "accion": "Editar", "material": material},
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def eliminar_material(request, pk):
+    material = get_object_or_404(Material, pk=pk)
+
+    if request.method == "POST":
+        material.delete()
+        return redirect("materiales:lista")
+
+    return render(request, "materiales/eliminar.html", {"material": material})

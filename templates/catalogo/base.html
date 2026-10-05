@@ -13,9 +13,9 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="{% url 'catalogo:inicio' %}"><span class="brand-mark">A<span>&</span>M</span><span class="brand-copy">Alacena <i>&</i> Molde<small>insumos para crear</small></span></a>
-    <nav class="main-nav" aria-label="Navegación principal"><a href="{% url 'catalogo:inicio' %}#catalogo">Catálogo</a><a href="{% url 'catalogo:inicio' %}#proveedores">Proveedores</a><a href="{% url 'catalogo:nosotros' %}">Nosotros</a></nav>
-    <a class="selection-button" href="{% url 'catalogo:inicio' %}#catalogo">Ver catálogo <span>↘</span></a>
+    <a class="brand" href="{% url 'inicio:inicio' %}"><span class="brand-mark">A<span>&</span>M</span><span class="brand-copy">Alacena <i>&</i> Molde<small>insumos para crear</small></span></a>
+    <nav class="main-nav" aria-label="Navegación principal"><a href="{% url 'inicio:inicio' %}#catalogo">Catálogo</a><a href="{% url 'inicio:inicio' %}#proveedores">Proveedores</a><a href="{% url 'inicio:nosotros' %}">Nosotros</a></nav>
+    <a class="selection-button" href="{% url 'inicio:inicio' %}#catalogo">Ver catálogo <span>↘</span></a>
   </header>
   {% block content %}{% endblock %}
   <footer><span>© 2026 Alacena & Molde</span><span>Un catálogo para manos inquietas.</span></footer>
