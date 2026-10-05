@@ -1,118 +1,108 @@
 # Dulce Repostería — Catálogo Web
 
 ## Propósito
-Aplicación web desarrollada con Django para presentar y organizar
-materiales utilizados en un emprendimiento de repostería y consultar
-información de proveedores. Los materiales se almacenan en la base de
-datos y se pueden crear, consultar, editar y eliminar desde el sitio.
 
-## Proyección
-El catálogo de materiales incluye validación de formularios, administración
-desde Django Admin y registro de fecha. No incluye gestión de stock.
+Aplicación Django para organizar materiales de repostería y consultar
+información de proveedores. Los materiales se almacenan en PostgreSQL y se
+pueden crear, consultar, editar y eliminar desde el sitio. La portada presenta
+hasta tres materiales disponibles consultados mediante el ORM.
 
 ## Integrantes
+
 - Pablo Gutiérrez
 - Matías Gallardo
 - Álvaro García
 
-## Repositorio
-https://github.com/41e23/catalogo-reposter-a
+## Aplicaciones
 
-## Instalación y ejecución
-```bash
+- `inicio`: portada e información general.
+- `materiales`: modelo `Material`, migraciones, ModelForm, Django Admin y CRUD.
+- `proveedores`: módulo de proveedores.
+
+## Requisitos
+
+- Python compatible con Django 6.1
+- PostgreSQL
+- Git
+
+## Instalación y ejecución (Windows)
+
+```powershell
 git clone https://github.com/41e23/catalogo-reposter-a.git
 cd catalogo-reposter-a
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Edita `.env` localmente con la configuración de tu PostgreSQL. Genera una clave
+secreta local con:
+
+```powershell
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+Crea la base de datos configurada en `DB_NAME` y ejecuta:
+
+```powershell
+python manage.py check
+python manage.py showmigrations
 python manage.py migrate
+python manage.py test materiales inicio
 python manage.py runserver
 ```
 
-Abrir en el navegador:
+Abre http://127.0.0.1:8000/ en el navegador.
 
-http://127.0.0.1:8000/
+## Variables de entorno y seguridad
 
-## Estructura principal
-```
-config/
-inicio/
-materiales/
-proveedores/
-templates/
-static/
-manage.py
-requirements.txt
-.gitignore
-README.md
-```
+`config/settings.py` carga `.env` localmente mediante `python-dotenv`. Configura
+`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` y las credenciales PostgreSQL mediante
+variables de entorno, nunca en el código. Completa `DB_NAME`, `DB_USER`,
+`DB_PASSWORD`, `DB_HOST` y `DB_PORT` para tu instancia.
+
+`.gitignore` excluye `.env` y permite versionar `.env.example`, que solo
+contiene valores de muestra. Si falta `SECRET_KEY` o `DB_PASSWORD`, Django
+detiene el arranque con un mensaje explícito.
+
+Las dependencias para PostgreSQL y el archivo de entorno son
+`psycopg[binary]` y `python-dotenv`.
 
 ## Rutas
-/                  Inicio
-/nosotros/         Nosotros
-/materiales/       Materiales
-/proveedores/      Proveedores
 
-Materiales ofrece operaciones CRUD en `/materiales/`; Proveedores permite
-filtrar contenido mediante parámetros GET en la URL (por ejemplo `?tipo=`).
+- `/` — Inicio con materiales disponibles.
+- `/nosotros/` — Información del emprendimiento.
+- `/materiales/` — CRUD de materiales.
+- `/proveedores/` — Proveedores.
+- `/admin/` — Django Admin.
 
 ## Trabajo colaborativo
-Este proyecto se desarrolla en un repositorio compartido en GitHub por:
 
-- Pablo Gutiérrez
-- Matías Gallardo
-- Álvaro García
-
-Los integrantes trabajan sobre el mismo repositorio usando Git y GitHub
-para subir cambios, crear commits e integrar el trabajo.
+Este proyecto se desarrolla en un repositorio compartido en GitHub por Pablo
+Gutiérrez, Matías Gallardo y Álvaro García. Las aplicaciones mantienen sus
+propias rutas mediante `urls.py` e `include()`.
 
 ## Dificultades y soluciones
-1. Organización de rutas de las distintas aplicaciones.
-   Solución: uso de `urls.py` por aplicación e `include()` en
-   `config/urls.py`.
-2. Evitar repetir estructura HTML.
-   Solución: uso de `base.html`, `extends` y `block`.
-3. Envío de información hacia los templates.
-   Solución: uso de contexto desde las vistas mediante `render()`.
-4. Filtrado de materiales y proveedores.
-   Solución: utilización de `request.GET` y listas Python en las vistas.
 
-## Aprendizajes
-- Diferencia entre proyecto y aplicación en Django.
-- Organización de rutas y uso de `include()`.
-- Vistas basadas en funciones, ORM de Django y `render()`.
-- Plantillas: `extends`, `block`, `if` y `for`.
-- Uso de `{% url %}` para navegación interna.
-- Trabajo colaborativo con GitHub.
+1. Organizar las rutas de las aplicaciones: usar un `urls.py` por aplicación
+   e incluirlos desde `config/urls.py`.
+2. Evitar repetir estructura HTML: utilizar plantillas con `extends` y bloques.
+3. Conectar el catálogo a datos persistentes: consultar `Material` mediante el
+   ORM en el CRUD y en la portada.
+4. Proteger configuración sensible: cargar secretos desde `.env`, ignorarlo
+   en Git y compartir únicamente `.env.example`.
 
 ## Registro de uso de IA
-La IA se utilizó como apoyo para revisar y proponer cambios menores en
-la estructura y documentación del proyecto. Ejemplos breves:
 
-- Conexión de rutas mediante `include()`:
-  - Necesidad: organizar urls por aplicación.
-  - Consulta: cómo incluir rutas de apps en `config/urls.py`.
-  - Solución propuesta: usar `path('app/', include('app.urls'))`.
-  - Cambio aplicado: ver `config/urls.py`.
-  - Aprendizaje: facilita separación de responsabilidad.
+La IA apoyó la configuración de PostgreSQL, la protección de credenciales y la
+integración de la portada. Problema: la configuración inicial usaba SQLite y
+tenía una clave escrita en `settings.py`. Prompt: “¿Cómo puedo configurar
+Django con PostgreSQL usando un archivo .env para no guardar SECRET_KEY,
+usuario ni contraseña directamente en settings.py?”. Decisión: utilizar
+`python-dotenv`, excluir `.env` de Git, conservar las tres aplicaciones e
+integrar la portada con el ORM.
 
-- Herencia de plantillas con `base.html`:
-  - Necesidad: evitar duplicación de HTML.
-  - Consulta: cómo estructurar `base.html` y usar `extends`.
-  - Solución propuesta: crear bloques `titulo` y `contenido`.
-  - Cambio aplicado: las plantillas usan `{% extends 'base.html' %}`.
-  - Aprendizaje: simplifica mantenimiento de layout.
-
-- Envío de contexto desde vistas:
-  - Necesidad: mostrar listas y variables en templates.
-  - Consulta: cómo pasar contexto con `render()`.
-  - Solución propuesta: pasar un diccionario `contexto`.
-  - Cambio aplicado: vistas envían listas de materiales/proveedores.
-  - Aprendizaje: permite templates dinámicos sin modelos.
-
-- Implementación de filtros mediante `request.GET`:
-  - Necesidad: filtrar listados sin formularios ni DB.
-  - Consulta: cómo leer parámetros GET en vistas.
-  - Solución propuesta: `request.GET.get('categoria')` y filtrar la lista.
-  - Cambio aplicado: filtros en `materiales` y `proveedores`.
-  - Aprendizaje: útil para demostraciones y prototipos.
+Registra los resultados de `check`, `migrate`, las pruebas y la revisión en
+navegador después de ejecutarlos en el entorno PostgreSQL local. No marques
+como verificada una comprobación que no se haya ejecutado.

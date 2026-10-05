@@ -1,8 +1,19 @@
 __pycache__/
 *.py[cod]
-db.sqlite3
+*.log
+
+# Entornos virtuales
 .venv/
 venv/
 env/
+
+# Variables de entorno y secretos
 .env
+.env.*
+!.env.example
+
+# Base de datos SQLite local
+*.sqlite3
+db.sqlite3
 .DS_Store
+Thumbs.db

@@ -1,21 +1,15 @@
 from django.shortcuts import render
 
-# Datos de ejemplo para mostrar contenido dinamico en la portada.
-# Mas adelante estos datos podrian venir de un modelo (base de datos).
-destacados = [
-    {'nombre': 'Harina sin polvos de hornear', 'categoria': 'Ingredientes'},
-    {'nombre': 'Manga pastelera reutilizable', 'categoria': 'Utensilios'},
-    {'nombre': 'Colorante en gel rojo', 'categoria': 'Decoracion'},
-]
+from materiales.models import Material
 
 
 def inicio(request):
-    """Pagina principal del catalogo: presenta el emprendimiento y
-    muestra algunos productos destacados usando contexto y un for."""
+    """Presenta el emprendimiento y materiales disponibles de la base de datos."""
+    destacados = Material.objects.filter(disponible=True).order_by('nombre')[:3]
     contexto = {
         'titulo_pagina': 'Bienvenido/a',
-        'nombre_emprendimiento': 'Dulce Reposteria',
-        'hay_destacados': len(destacados) > 0,
+        'nombre_emprendimiento': 'Dulce Repostería',
+        'hay_destacados': destacados.exists(),
         'destacados': destacados,
     }
     return render(request, 'inicio/inicio.html', contexto)
@@ -26,6 +20,10 @@ def nosotros(request):
     contexto = {
         'titulo_pagina': 'Nosotros',
         'anio_inicio': 2023,
-        'integrantes_equipo': [],
+        'integrantes_equipo': [
+            'Pablo Gutiérrez',
+            'Matías Gallardo',
+            'Álvaro García',
+        ],
     }
     return render(request, 'inicio/nosotros.html', contexto)
