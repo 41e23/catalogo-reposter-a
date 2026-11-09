@@ -2,7 +2,7 @@
 
 ## Propósito
 
-Aplicación Django para organizar materiales de repostería y consultar
+Aplicación Django con API RESTful JWT para organizar materiales de repostería y consultar
 información de proveedores. Los materiales se almacenan en PostgreSQL y se
 pueden crear, consultar, editar y eliminar desde el sitio. La portada presenta
 hasta tres materiales disponibles consultados mediante el ORM.
@@ -16,7 +16,7 @@ hasta tres materiales disponibles consultados mediante el ORM.
 ## Aplicaciones
 
 - `inicio`: portada e información general.
-- `materiales`: modelo `Material`, migraciones, ModelForm, Django Admin y CRUD.
+- `materiales`: modelo `Material`, migraciones, ModelForm, Django Admin, CRUD HTML y API REST.
 - `proveedores`: módulo de proveedores.
 
 ## Requisitos
@@ -106,3 +106,66 @@ integrar la portada con el ORM.
 Registra los resultados de `check`, `migrate`, las pruebas y la revisión en
 navegador después de ejecutarlos en el entorno PostgreSQL local. No marques
 como verificada una comprobación que no se haya ejecutado.
+
+
+## Evaluación 3 — API RESTful y JWT
+
+La API añade acceso JSON al **mismo modelo `Material` y la misma base PostgreSQL**;
+no elimina el CRUD HTML ni las aplicaciones `inicio`, `materiales` y `proveedores`.
+Instalar las dependencias actualizadas con `python -m pip install -r requirements.txt`.
+
+| Método | URL | Resultado | Acceso |
+| --- | --- | --- | --- |
+| GET | `/api/materiales/` | Lista JSON (200) | Público |
+| GET | `/api/materiales/<id>/` | Detalle JSON (200/404) | Público |
+| POST | `/api/materiales/` | Crear (201/400) | JWT |
+| PUT/PATCH | `/api/materiales/<id>/` | Actualizar (200/400/404) | JWT |
+| DELETE | `/api/materiales/<id>/` | Borrar (204/404) | JWT |
+| POST | `/api/token/` | Obtener `access` y `refresh` | Usuario válido |
+| POST | `/api/token/refresh/` | Renovar `access` | Refresh válido |
+
+### Usuario de pruebas y obtención del token
+
+Crear un usuario propio con `python manage.py createsuperuser` (no publicar su contraseña).
+En Postman/Thunder Client enviar `POST http://127.0.0.1:8000/api/token/`, JSON:
+
+```json
+{"username":"TU_USUARIO","password":"TU_CONTRASEÑA_LOCAL"}
+```
+
+Copiar el `access` y añadir a las solicitudes protegidas la cabecera
+`Authorization: Bearer TU_ACCESS_TOKEN`. No almacenar tokens ni contraseñas en Git.
+Ejemplo de creación `POST /api/materiales/`:
+
+```json
+{"nombre":"Chocolate amargo","categoria":"chocolates","precio":"250.00","disponible":true,"descripcion":"70% cacao"}
+```
+
+La API valida el mismo mínimo de precio ($100 CLP), nombre de al menos tres
+caracteres y nombre que no sea solo numérico, además de categorías y tipos.
+Las lecturas son públicas; las escrituras exigen token JWT. Los tokens access
+expiran a los 15 minutos y los refresh al día. El CRUD HTML conserva sus
+protecciones CSRF de la evaluación anterior.
+
+### Comprobación
+
+1. Configurar `.env` local y crear la base PostgreSQL de `DB_NAME`.
+2. `python manage.py check` y `python manage.py migrate`.
+3. `python manage.py test materiales inicio proveedores`.
+4. `python manage.py runserver` y verificar las ocho pruebas de la pauta
+   en Postman/Thunder Client: tokens, GET sin token, GET autorizado, POST,
+   PUT/PATCH, DELETE, POST inválido y POST sin token.
+5. Comprobar datos en `/admin/` y PostgreSQL, capturar evidencia para el PDF.
+
+Los tests `materiales/test_api.py` automatizan estas operaciones, además de
+validar 404 y tokens inválidos. **La ejecución real y las capturas deben hacerse
+con PostgreSQL local configurado; no se considera una prueba aprobada solo por
+existir el test.**
+
+### Desarrollo colaborativo e IA
+
+Se incorporaron `serializers.py`, `api_views.py`, `api_urls.py`, `test_api.py`,
+configuración DRF/JWT en `settings.py`, rutas en `config/urls.py` y dependencias.
+El equipo debe documentar los problemas, prompts, cambios aceptados y resultados
+reales de las pruebas; no inventar iteraciones ni capturas. Realizar commits
+individuales descriptivos sobre una rama de trabajo y revisar antes del merge.
