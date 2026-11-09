@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ titulo_pagina }} - Dulce Repostería{% endblock %}
+
+{% block contenido %}
+    <section>
+        <h2>{{ titulo_pagina }}</h2>
+        <p>
+            Dulce Repostería nació el año {{ anio_inicio }} como un pequeño
+            emprendimiento familiar. Con el tiempo fuimos creciendo y hoy
+            buscamos ordenar nuestro catálogo de materiales y proveedores
+            en un solo lugar, para seguir mejorando junto a nuestros clientes.
+        </p>
+    </section>
+
+    <section>
+        <h3>Equipo</h3>
+        {% if integrantes_equipo %}
+            <ul>
+                {% for integrante in integrantes_equipo %}
+                    <li>{{ integrante }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Información del equipo próximamente.</p>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,5 @@
+{% extends 'catalogo/base.html' %}
+{% block title %}Nosotros | Alacena & Molde{% endblock %}
+{% block content %}
+<main class="about-page"><section class="about-hero"><p class="eyebrow">EL PROYECTO</p><h1>Una alacena<br>para hacer<br><em>posible.</em></h1><p>Alacena & Molde nace para acompañar a quienes convierten una idea dulce en un emprendimiento real.</p></section><section class="about-grid"><div><p class="eyebrow">NUESTRA MIRADA</p><h2>Crecer también<br>es <em>elegir bien.</em></h2></div><div><p>Reunimos ingredientes, utensilios y materiales de decoración en un catálogo claro, cercano y en constante crecimiento.</p><p>Trabajamos junto a proveedores que comparten el cuidado por el oficio y la calidad de cada producto.</p><a class="primary-button" href="{% url 'catalogo:inicio' %}#catalogo">Ver el catálogo <span>↘</span></a></div></section></main>
+{% endblock %}

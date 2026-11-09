@@ -1,0 +1,32 @@
+{% extends 'catalogo/base.html' %}
+
+{% block title %}{{ accion }} material | Alacena & Molde{% endblock %}
+
+{% block content %}
+<main class="form-page">
+  <section class="form-card">
+    <p class="eyebrow">{{ accion|upper }} MATERIAL</p>
+    <h1>{{ accion }} material</h1>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      {% for field in form %}
+        <div class="field-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="error-text">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button class="primary-button" type="submit">Guardar</button>
+        <a class="secondary-button" href="{% url 'materiales:lista' %}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
